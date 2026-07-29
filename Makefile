@@ -44,6 +44,7 @@ Core/Src/stm32f4xx_hal_msp.c \
 User/PWM.c \
 User/tb6612.c \
 User/Motor.c \
+User/OLED.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c \

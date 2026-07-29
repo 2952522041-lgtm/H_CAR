@@ -26,6 +26,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "Motor.h"
+#include "OLED.h"
 
 /* USER CODE END Includes */
 
@@ -98,13 +99,15 @@ int main(void)
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
   Motor_Init();
-
+  OLED_Init();
+  OLED_ShowString(1,1,"hello");
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
