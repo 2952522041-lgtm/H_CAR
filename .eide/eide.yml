@@ -7,6 +7,7 @@ srcDirs:
   - Core
   - Drivers
   - User
+  - Middlewares
 virtualFolder:
   name: <virtual_root>
   files:
@@ -29,6 +30,9 @@ targets:
         - Drivers/STM32F4xx_HAL_Driver/Inc
         - Drivers/STM32F4xx_HAL_Driver/Inc/Legacy
         - User
+        - Middlewares/Third_Party/FreeRTOS/Source/include
+        - Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2
+        - Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F
       libList: []
     excludeList: []
     settings:
