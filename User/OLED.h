@@ -3,7 +3,7 @@
 #include <stdint.h>
 
 /*
- * SSD1306 128x64 OLED on I2C1.
+ * SSD1306 128x64 OLED on I2C2 (PB10 SCL, PB11 SDA).
  * HAL uses the 7-bit slave address shifted left by one bit.
  * Change this macro to (0x3DU << 1) if the module uses address 0x3D.
  */
@@ -19,4 +19,3 @@ void OLED_ShowNum(uint8_t line, uint8_t column, uint32_t number, uint8_t length)
 void OLED_ShowSignedNum(uint8_t line, uint8_t column, int32_t number, uint8_t length);
 void OLED_ShowHexNum(uint8_t line, uint8_t column, uint32_t number, uint8_t length);
 void OLED_ShowBinNum(uint8_t line, uint8_t column, uint32_t number, uint8_t length);
-

@@ -14,8 +14,8 @@ typedef struct
 } Motor_Config_t;
 
 static const Motor_Config_t motor_map[MOTOR_NUM] = {
-    [MOTOR_LEFT] = {tb6612_CH_LEFT, Motor_LEFT_direction},
-    [MOTOR_RIGHT] = {tb6612_CH_RIGHT, Motor_RIGHT_direction},
+    [MOTOR_RIGHT] = {tb6612_CH_LEFT, Motor_LEFT_direction},
+    [MOTOR_LEFT] = {tb6612_CH_RIGHT, Motor_RIGHT_direction},
 };
 
 static float Motor_LimitRPM(float rpm)

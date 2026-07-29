@@ -28,7 +28,7 @@ static void OLED_WriteCommandBuffer(const uint8_t *commands, uint8_t count)
         packet[i + 1U] = commands[i];
     }
 
-    (void)HAL_I2C_Master_Transmit(&hi2c1, OLED_I2C_ADDRESS, packet, (uint16_t)count + 1U, OLED_I2C_TIMEOUT_MS);
+    (void)HAL_I2C_Master_Transmit(&hi2c2, OLED_I2C_ADDRESS, packet, (uint16_t)count + 1U, OLED_I2C_TIMEOUT_MS);
 }
 
 static void OLED_WriteDataBuffer(const uint8_t *data, uint8_t count)
@@ -47,7 +47,7 @@ static void OLED_WriteDataBuffer(const uint8_t *data, uint8_t count)
         packet[i + 1U] = data[i];
     }
 
-    (void)HAL_I2C_Master_Transmit(&hi2c1, OLED_I2C_ADDRESS, packet, (uint16_t)count + 1U, OLED_I2C_TIMEOUT_MS);
+    (void)HAL_I2C_Master_Transmit(&hi2c2, OLED_I2C_ADDRESS, packet, (uint16_t)count + 1U, OLED_I2C_TIMEOUT_MS);
 }
 
 static void OLED_SetCursor(uint8_t page, uint8_t x)
@@ -99,7 +99,7 @@ void OLED_Init(void)
     };
 
     /*
-     * MX_I2C1_Init() must be called before this function. A short delay gives
+     * MX_I2C2_Init() must be called before this function. A short delay gives
      * the OLED controller time to finish its power-on reset.
      */
     HAL_Delay(100U);

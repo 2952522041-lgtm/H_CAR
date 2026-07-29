@@ -62,10 +62,12 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-static void Encoder_TestTask(void)
+static void Encoder_DisplayTask(void)
 {
   uint32_t now_ms = HAL_GetTick();
   uint32_t elapsed_ms = now_ms - encoder_last_sample_ms;
+  float left_rpm;
+  float right_rpm;
 
   if (elapsed_ms < ENCODER_SAMPLE_PERIOD_MS)
   {
@@ -75,12 +77,11 @@ static void Encoder_TestTask(void)
   encoder_last_sample_ms = now_ms;
   Encoder_Update((float)elapsed_ms / 1000.0f);
 
-  /*
-   * rpm_plot.html expects one little-endian Float32 value per sample.
-   * STM32F407 is little-endian, so the float can be sent directly.
-   */
-  float rpm = Encoder_GetRPM(ENCODER_LEFT);
-  HAL_UART_Transmit(&huart2, (uint8_t *)&rpm, sizeof(rpm), 10U);
+  left_rpm = Encoder_GetRPM(ENCODER_LEFT);
+  right_rpm = Encoder_GetRPM(ENCODER_RIGHT);
+
+  OLED_ShowSignedNum(1, 6, (int32_t)left_rpm, 5);
+  OLED_ShowSignedNum(2, 7, (int32_t)right_rpm, 5);
 }
 
 /* USER CODE END 0 */
@@ -118,21 +119,23 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM3_Init();
   MX_USART2_UART_Init();
-  MX_I2C1_Init();
   MX_TIM4_Init();
+  MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
   Motor_Init();
   Encoder_Init();
   encoder_last_sample_ms = HAL_GetTick();
   OLED_Init();
-  OLED_ShowString(1,1,"Encoder test");
+  OLED_ShowString(1, 1, "left:");
+  OLED_ShowString(2, 1, "right:");
+  Motor_DriveAllRPM(1000.0f,1000.0f);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    Encoder_TestTask();
+    Encoder_DisplayTask();
 
     /* USER CODE END WHILE */
 

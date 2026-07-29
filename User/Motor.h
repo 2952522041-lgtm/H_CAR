@@ -1,7 +1,7 @@
 #pragma once
 
 #define Motor_Max_RPM         (330.0f)
-#define Motor_LEFT_direction  (-1.0f)
+#define Motor_LEFT_direction  (1.0f)
 #define Motor_RIGHT_direction (-1.0f)
 
 typedef enum
