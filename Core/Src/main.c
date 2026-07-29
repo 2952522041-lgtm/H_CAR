@@ -26,7 +26,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "8channel.h"
+#include "app_task.h"
 
 /* USER CODE END Includes */
 
@@ -99,20 +99,7 @@ int main(void)
   MX_TIM4_Init();
   MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
-  LineFollow_Init();
-
-  if (LineFollow_StartUartReceive() != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /* Allow the sensor module to finish its UART startup before enabling output. */
-  HAL_Delay(1000U);
-
-  if (LineFollow_EnableDigitalOutput() != HAL_OK)
-  {
-    Error_Handler();
-  }
+  User_Init();
 
   /* USER CODE END 2 */
 
@@ -129,8 +116,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    (void)LineFollow_Update();
-
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -205,6 +190,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
+  if (htim->Instance == TIM4)
+  {
+    App_Timer100HzISR();
+  }
 
   /* USER CODE END Callback 1 */
 }
