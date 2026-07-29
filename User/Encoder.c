@@ -8,14 +8,15 @@
 typedef struct 
 {
     TIM_HandleTypeDef *htim;
+    float direction;
     int32_t last_count;
     float rpm;
 }Encoder_Config_t;
 
 static Encoder_Config_t encoders[ENCODER_NUM] =
 {
-    [ENCODER_LEFT] = {&htim2, 0, 0.0f},
-    [ENCODER_RIGHT] = {&htim3, 0, 0.0f}
+    [ENCODER_LEFT] = {&htim3, -1.0f, 0, 0.0f},
+    [ENCODER_RIGHT] = {&htim2, 1.0f, 0, 0.0f}
 };
 
 void Encoder_Init(void)
@@ -71,7 +72,7 @@ void Encoder_Update(float dt_sec)
         float motor_rev = (float)diff / (ENCODER_PPR * ENCODER_QUAD_MULTIPLY);
         float wheel_rev = motor_rev / MOTOR_GEAR_RATIO;
 
-        encoders[i].rpm = wheel_rev / dt_sec * 60.0f;
+        encoders[i].rpm = encoders[i].direction * wheel_rev / dt_sec * 60.0f;
     }
 }
 

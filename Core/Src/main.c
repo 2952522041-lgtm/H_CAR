@@ -25,6 +25,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "Encoder.h"
 #include "Motor.h"
 #include "OLED.h"
 
@@ -37,6 +38,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define ENCODER_SAMPLE_PERIOD_MS 50U
 
 /* USER CODE END PD */
 
@@ -48,6 +50,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+static uint32_t encoder_last_sample_ms;
 
 /* USER CODE END PV */
 
@@ -59,6 +62,26 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+static void Encoder_TestTask(void)
+{
+  uint32_t now_ms = HAL_GetTick();
+  uint32_t elapsed_ms = now_ms - encoder_last_sample_ms;
+
+  if (elapsed_ms < ENCODER_SAMPLE_PERIOD_MS)
+  {
+    return;
+  }
+
+  encoder_last_sample_ms = now_ms;
+  Encoder_Update((float)elapsed_ms / 1000.0f);
+
+  /*
+   * rpm_plot.html expects one little-endian Float32 value per sample.
+   * STM32F407 is little-endian, so the float can be sent directly.
+   */
+  float rpm = Encoder_GetRPM(ENCODER_LEFT);
+  HAL_UART_Transmit(&huart2, (uint8_t *)&rpm, sizeof(rpm), 10U);
+}
 
 /* USER CODE END 0 */
 
@@ -99,15 +122,18 @@ int main(void)
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
   Motor_Init();
+  Encoder_Init();
+  encoder_last_sample_ms = HAL_GetTick();
   OLED_Init();
-  OLED_ShowString(1,1,"hello");
+  OLED_ShowString(1,1,"Encoder test");
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    
+    Encoder_TestTask();
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
