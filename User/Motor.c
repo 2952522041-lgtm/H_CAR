@@ -33,6 +33,21 @@ static float Motor_LimitRPM(float rpm)
     return rpm;
 }
 
+static float Motor_LimitDuty(float duty)
+{
+    if (duty > Motor_Max_Duty)
+    {
+        return Motor_Max_Duty;
+    }
+
+    if (duty < -Motor_Max_Duty)
+    {
+        return -Motor_Max_Duty;
+    }
+
+    return duty;
+}
+
 void Motor_Init(void)
 {
     tb6612_Init();
@@ -68,9 +83,20 @@ float Motor_GetTargetRPM(Motor_ID_t motor)
 
 void Motor_DriveRPM(Motor_ID_t motor, float rpm)
 {
+    Motor_DriveDuty(motor, Motor_LimitRPM(rpm) / Motor_Max_RPM * Motor_Max_Duty);
+}
+
+void Motor_DriveAllRPM(float left_rpm, float right_rpm)
+{
+    Motor_DriveRPM(MOTOR_LEFT, left_rpm);
+    Motor_DriveRPM(MOTOR_RIGHT, right_rpm);
+}
+
+void Motor_DriveDuty(Motor_ID_t motor, float duty)
+{
     tb6612_Channel_t tb6612_channel;
-    float motor_rpm;
-    uint32_t duty;
+    float motor_duty;
+    uint32_t duty_value;
 
     if ((uint32_t)motor >= (uint32_t)MOTOR_NUM)
     {
@@ -78,32 +104,32 @@ void Motor_DriveRPM(Motor_ID_t motor, float rpm)
     }
 
     tb6612_channel = motor_map[motor].tb6612_CH;
-    motor_rpm = Motor_LimitRPM(rpm) * motor_map[motor].direction;
+    motor_duty = Motor_LimitDuty(duty) * motor_map[motor].direction;
 
-    if (motor_rpm == 0.0f)
+    if (motor_duty == 0.0f)
     {
         Motor_Stop(motor);
         return;
     }
 
-    if (motor_rpm > 0.0f)
+    if (motor_duty > 0.0f)
     {
         tb6612_SetDirection(tb6612_channel, tb6612_DIR_FORWARD);
     }
     else
     {
         tb6612_SetDirection(tb6612_channel, tb6612_DIR_BACKWARD);
-        motor_rpm = -motor_rpm;
+        motor_duty = -motor_duty;
     }
 
-    duty = (uint32_t)((motor_rpm / Motor_Max_RPM) * 100.0f);
-    tb6612_SetDuty(tb6612_channel, duty);
+    duty_value = (uint32_t)(motor_duty + 0.5f);
+    tb6612_SetDuty(tb6612_channel, duty_value);
 }
 
-void Motor_DriveAllRPM(float left_rpm, float right_rpm)
+void Motor_DriveAllDuty(float left_duty, float right_duty)
 {
-    Motor_DriveRPM(MOTOR_LEFT, left_rpm);
-    Motor_DriveRPM(MOTOR_RIGHT, right_rpm);
+    Motor_DriveDuty(MOTOR_LEFT, left_duty);
+    Motor_DriveDuty(MOTOR_RIGHT, right_duty);
 }
 
 void Motor_Stop(Motor_ID_t motor)

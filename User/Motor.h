@@ -1,6 +1,7 @@
 #pragma once
 
 #define Motor_Max_RPM         (330.0f)
+#define Motor_Max_Duty        (100.0f)
 #define Motor_LEFT_direction  (1.0f)
 #define Motor_RIGHT_direction (-1.0f)
 
@@ -19,6 +20,8 @@ float Motor_GetTargetRPM(Motor_ID_t motor);
 
 void Motor_DriveRPM(Motor_ID_t motor, float rpm);
 void Motor_DriveAllRPM(float left_rpm, float right_rpm);
+void Motor_DriveDuty(Motor_ID_t motor, float duty);
+void Motor_DriveAllDuty(float left_duty, float right_duty);
 
 void Motor_Brake(Motor_ID_t motor);
 void Motor_Stop(Motor_ID_t motor);

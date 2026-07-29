@@ -25,9 +25,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "Encoder.h"
-#include "Motor.h"
-#include "OLED.h"
+#include "8channel.h"
 
 /* USER CODE END Includes */
 
@@ -38,7 +36,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define ENCODER_SAMPLE_PERIOD_MS 50U
 
 /* USER CODE END PD */
 
@@ -50,7 +47,6 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-static uint32_t encoder_last_sample_ms;
 
 /* USER CODE END PV */
 
@@ -62,27 +58,6 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-static void Encoder_DisplayTask(void)
-{
-  uint32_t now_ms = HAL_GetTick();
-  uint32_t elapsed_ms = now_ms - encoder_last_sample_ms;
-  float left_rpm;
-  float right_rpm;
-
-  if (elapsed_ms < ENCODER_SAMPLE_PERIOD_MS)
-  {
-    return;
-  }
-
-  encoder_last_sample_ms = now_ms;
-  Encoder_Update((float)elapsed_ms / 1000.0f);
-
-  left_rpm = Encoder_GetRPM(ENCODER_LEFT);
-  right_rpm = Encoder_GetRPM(ENCODER_RIGHT);
-
-  OLED_ShowSignedNum(1, 6, (int32_t)left_rpm, 5);
-  OLED_ShowSignedNum(2, 7, (int32_t)right_rpm, 5);
-}
 
 /* USER CODE END 0 */
 
@@ -122,20 +97,28 @@ int main(void)
   MX_TIM4_Init();
   MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
-  Motor_Init();
-  Encoder_Init();
-  encoder_last_sample_ms = HAL_GetTick();
-  OLED_Init();
-  OLED_ShowString(1, 1, "left:");
-  OLED_ShowString(2, 1, "right:");
-  Motor_DriveAllRPM(1000.0f,1000.0f);
+  LineFollow_Init();
+
+  if (LineFollow_StartUartReceive() != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /* Allow the sensor module to finish its UART startup before enabling output. */
+  HAL_Delay(1000U);
+
+  if (LineFollow_EnableDigitalOutput() != HAL_OK)
+  {
+    Error_Handler();
+  }
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    Encoder_DisplayTask();
+    (void)LineFollow_Update();
 
     /* USER CODE END WHILE */
 
